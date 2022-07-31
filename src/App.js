@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { SharedLayout } from "./components/sharedLayout";
+import { Home } from "./components/Home.js";
+import { SignUp } from "./components/SignUp.js";
+import { ProtectedRoute } from "./components/ProtectedRoute.js";
+import { Dashboard } from "./components/Dashboard.js";
+import { AllPass } from "./components/AllPass.js";
+let prevUser;
+if (localStorage.getItem("user") != null) {
+  prevUser = JSON.parse(localStorage.getItem("user"));
+}
 function App() {
+  const [user, setUser] = useState(prevUser);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SharedLayout user={user} />}>
+          <Route index element={<Home setUser={setUser} />} />
+
+          <Route path="/changePassword" element={<SignUp />} />
+        </Route>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute user={user}>
+              <Dashboard user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/allPass"
+          element={
+            <ProtectedRoute user={user}>
+              <AllPass user={user} />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
